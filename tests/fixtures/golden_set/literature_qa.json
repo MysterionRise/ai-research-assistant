@@ -1,0 +1,63 @@
+{
+  "name": "ARIA Literature QA Golden Set",
+  "description": "Test cases for evaluating scientific literature question answering",
+  "version": "1.0",
+  "test_cases": [
+    {
+      "id": "lit_1",
+      "query": "What are the main mechanisms of CRISPR-Cas9 gene editing?",
+      "expected_answer": "CRISPR-Cas9 uses a guide RNA to direct the Cas9 nuclease to a specific DNA sequence, where it creates a double-strand break. The cell's repair mechanisms then either disrupt the gene (NHEJ) or insert new genetic material (HDR).",
+      "expected_sources": [],
+      "category": "molecular_biology",
+      "difficulty": "medium"
+    },
+    {
+      "id": "lit_2",
+      "query": "How does mRNA vaccine technology work?",
+      "expected_answer": "mRNA vaccines deliver synthetic messenger RNA that encodes viral proteins. Cells use this mRNA to produce the viral protein, triggering an immune response without causing infection.",
+      "expected_sources": [],
+      "category": "immunology",
+      "difficulty": "medium"
+    },
+    {
+      "id": "lit_3",
+      "query": "What is the difference between Type 1 and Type 2 diabetes?",
+      "expected_answer": "Type 1 diabetes is an autoimmune condition where the immune system attacks insulin-producing beta cells. Type 2 diabetes involves insulin resistance and progressive beta cell dysfunction.",
+      "expected_sources": [],
+      "category": "endocrinology",
+      "difficulty": "easy"
+    },
+    {
+      "id": "mat_1",
+      "query": "What are the properties of graphene that make it useful for electronics?",
+      "expected_answer": "Graphene has exceptional electrical conductivity, high electron mobility, mechanical strength, and flexibility, making it promising for flexible electronics, transistors, and sensors.",
+      "expected_sources": [],
+      "category": "materials_science",
+      "difficulty": "medium"
+    },
+    {
+      "id": "mat_2",
+      "query": "How do lithium-ion batteries work?",
+      "expected_answer": "Lithium-ion batteries store energy by moving lithium ions between the anode and cathode through an electrolyte during charge and discharge cycles.",
+      "expected_sources": [],
+      "category": "materials_science",
+      "difficulty": "easy"
+    },
+    {
+      "id": "lit_4",
+      "query": "What is CAR-T cell therapy and how does it work?",
+      "expected_answer": "CAR-T cell therapy is a type of immunotherapy where a patient's T cells are genetically modified to express chimeric antigen receptors (CARs) that recognize and attack cancer cells.",
+      "expected_sources": [],
+      "category": "oncology",
+      "difficulty": "hard"
+    },
+    {
+      "id": "mat_3",
+      "query": "What are metal-organic frameworks (MOFs) used for?",
+      "expected_answer": "Metal-organic frameworks are porous materials used for gas storage, separation, catalysis, drug delivery, and sensing applications due to their high surface area and tunable properties.",
+      "expected_sources": [],
+      "category": "materials_science",
+      "difficulty": "hard"
+    }
+  ]
+}

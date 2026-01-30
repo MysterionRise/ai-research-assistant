@@ -1,0 +1,221 @@
+# ============================================================================
+# ARIA Research Assistant - Docker Compose
+# ============================================================================
+# Local development environment
+# Usage: docker-compose up -d
+# ============================================================================
+
+version: '3.9'
+
+services:
+  # =========================
+  # API Server
+  # =========================
+  api:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
+      target: development
+    container_name: aria-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production!}
+      - DATABASE_URL=postgresql+asyncpg://aria:aria_password@postgres:5432/aria_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - ../../src:/app/src:ro
+      - ../../tests:/app/tests:ro
+      - aria-data:/data/aria
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aria-network
+    restart: unless-stopped
+
+  # =========================
+  # Celery Worker
+  # =========================
+  worker:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
+      target: development
+    container_name: aria-worker
+    command: celery -A aria.worker worker --loglevel=info
+    environment:
+      - ENVIRONMENT=development
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production!}
+      - DATABASE_URL=postgresql+asyncpg://aria:aria_password@postgres:5432/aria_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - ../../src:/app/src:ro
+      - aria-data:/data/aria
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aria-network
+    restart: unless-stopped
+
+  # =========================
+  # PostgreSQL with pgvector
+  # =========================
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: aria-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=aria
+      - POSTGRES_PASSWORD=aria_password
+      - POSTGRES_DB=aria_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aria -d aria_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aria-network
+    restart: unless-stopped
+
+  # =========================
+  # Redis
+  # =========================
+  redis:
+    image: redis:7-alpine
+    container_name: aria-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aria-network
+    restart: unless-stopped
+
+  # =========================
+  # Weaviate (Vector DB - optional)
+  # =========================
+  weaviate:
+    image: semitechnologies/weaviate:1.24.1
+    container_name: aria-weaviate
+    ports:
+      - "8080:8080"
+    environment:
+      - QUERY_DEFAULTS_LIMIT=25
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=true
+      - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+      - DEFAULT_VECTORIZER_MODULE=none
+      - CLUSTER_HOSTNAME=node1
+    volumes:
+      - weaviate-data:/var/lib/weaviate
+    networks:
+      - aria-network
+    restart: unless-stopped
+    profiles:
+      - vector-db
+
+  # =========================
+  # Neo4j (Knowledge Graph - optional)
+  # =========================
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: aria-neo4j
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    networks:
+      - aria-network
+    restart: unless-stopped
+    profiles:
+      - graph-db
+
+  # =========================
+  # Prometheus (Monitoring - optional)
+  # =========================
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: aria-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - aria-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # =========================
+  # Grafana (Dashboards - optional)
+  # =========================
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: aria-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - aria-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+# =========================
+# Networks
+# =========================
+networks:
+  aria-network:
+    driver: bridge
+
+# =========================
+# Volumes
+# =========================
+volumes:
+  postgres-data:
+  redis-data:
+  aria-data:
+  weaviate-data:
+  neo4j-data:
+  neo4j-logs:
+  prometheus-data:
+  grafana-data:
