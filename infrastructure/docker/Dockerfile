@@ -7,7 +7,7 @@
 # =========================
 # Stage 1: Builder
 # =========================
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -32,12 +32,12 @@ COPY pyproject.toml ./
 COPY src/ ./src/
 RUN pip install --upgrade pip && \
     pip install build && \
-    pip install -e .
+    pip install .
 
 # =========================
 # Stage 2: Production
 # =========================
-FROM python:3.11-slim as production
+FROM python:3.11-slim AS production
 
 # Labels
 LABEL maintainer="ARIA Team <aria-team@company.com>" \
@@ -101,13 +101,13 @@ CMD ["uvicorn", "aria.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
 # =========================
 # Stage 3: Development
 # =========================
-FROM production as development
+FROM production AS development
 
 # Switch to root for installing dev dependencies
 USER root
 
 # Install development dependencies
-RUN pip install -e ".[dev]"
+RUN pip install ".[dev]"
 
 # Install additional dev tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
