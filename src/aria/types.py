@@ -3,7 +3,7 @@
 Contains Pydantic models, TypedDicts, and type aliases used across the application.
 """
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field
@@ -24,7 +24,7 @@ T = TypeVar("T")
 # =========================
 
 
-class DocumentSource(str, Enum):
+class DocumentSource(StrEnum):
     """Source of a document."""
 
     INTERNAL = "internal"
@@ -33,7 +33,7 @@ class DocumentSource(str, Enum):
     SEMANTIC_SCHOLAR = "semantic_scholar"
 
 
-class SearchSource(str, Enum):
+class SearchSource(StrEnum):
     """Search source identifiers."""
 
     INTERNAL = "internal"
@@ -42,7 +42,7 @@ class SearchSource(str, Enum):
     SEMANTIC_SCHOLAR = "semantic_scholar"
 
 
-class ChunkType(str, Enum):
+class ChunkType(StrEnum):
     """Type of document chunk."""
 
     TEXT = "text"

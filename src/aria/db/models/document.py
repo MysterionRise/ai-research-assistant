@@ -1,6 +1,6 @@
 """Document model for storing ingested documents."""
 
-from enum import Enum
+from enum import StrEnum
 
 from sqlalchemy import Index, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from aria.db.base import Base, TimestampMixin, UUIDMixin
 
 
-class DocumentStatus(str, Enum):
+class DocumentStatus(StrEnum):
     """Document processing status."""
 
     PENDING = "pending"
