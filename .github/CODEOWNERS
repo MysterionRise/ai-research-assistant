@@ -1,0 +1,37 @@
+# CODEOWNERS file for ARIA
+# These owners will be requested for review when someone opens a pull request.
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @MysterionRise
+
+# Core application code
+/src/aria/ @MysterionRise
+
+# API routes and schemas
+/src/aria/api/ @MysterionRise
+
+# Agent system
+/src/aria/agents/ @MysterionRise
+
+# RAG pipeline
+/src/aria/rag/ @MysterionRise
+
+# Compliance and audit
+/src/aria/compliance/ @MysterionRise
+
+# Configuration
+/src/aria/config/ @MysterionRise
+
+# Infrastructure and deployment
+/infrastructure/ @MysterionRise
+/Dockerfile @MysterionRise
+/docker-compose*.yml @MysterionRise
+
+# CI/CD
+/.github/ @MysterionRise
+
+# Documentation
+/docs/ @MysterionRise
+README.md @MysterionRise
+CLAUDE.md @MysterionRise

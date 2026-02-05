@@ -1,0 +1,32 @@
+name: Dependency Review
+
+on:
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - "poetry.lock"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Fail on high and critical severity vulnerabilities
+          fail-on-severity: high
+          # Deny copyleft licenses that may affect proprietary code
+          deny-licenses: GPL-3.0, AGPL-3.0, LGPL-3.0
+          # Allow common permissive licenses
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, MPL-2.0, PSF-2.0
+          # Comment on PR with findings
+          comment-summary-in-pr: always
