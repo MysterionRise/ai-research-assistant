@@ -1,6 +1,10 @@
 """Tests for evaluation framework."""
 
-from aria.evaluation.golden_set import EvalCase, create_sample_golden_set
+import json
+import tempfile
+from pathlib import Path
+
+from aria.evaluation.golden_set import EvalCase, GoldenSet, create_sample_golden_set
 from aria.evaluation.metrics import RAGMetrics
 
 
@@ -125,3 +129,76 @@ class TestGoldenSet:
         assert tc.expected_answer == "X is..."
         assert tc.category == "test"
         assert tc.difficulty == "medium"  # Default
+
+    def test_to_json_and_from_json(self):
+        """Test saving and loading golden set to/from JSON."""
+        # Create a golden set
+        gs = GoldenSet(
+            name="Test Golden Set",
+            description="Test description",
+            test_cases=[
+                EvalCase(
+                    id="tc1",
+                    query="Test query?",
+                    expected_answer="Test answer",
+                    category="test",
+                    difficulty="easy",
+                ),
+            ],
+            version="1.0",
+        )
+
+        # Save to temp file
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            temp_path = Path(f.name)
+
+        try:
+            gs.to_json(temp_path)
+
+            # Load back
+            loaded = GoldenSet.from_json(temp_path)
+
+            assert loaded.name == "Test Golden Set"
+            assert loaded.description == "Test description"
+            assert len(loaded.test_cases) == 1
+            assert loaded.test_cases[0].id == "tc1"
+            assert loaded.test_cases[0].query == "Test query?"
+        finally:
+            temp_path.unlink()
+
+    def test_from_json_minimal(self):
+        """Test loading golden set with minimal data."""
+        data = {
+            "test_cases": [
+                {"query": "Simple query?"},
+            ]
+        }
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(data, f)
+            temp_path = Path(f.name)
+
+        try:
+            loaded = GoldenSet.from_json(temp_path)
+
+            assert loaded.name == "Golden Set"  # Default
+            assert len(loaded.test_cases) == 1
+            assert loaded.test_cases[0].query == "Simple query?"
+            assert loaded.test_cases[0].category == "general"  # Default
+        finally:
+            temp_path.unlink()
+
+    def test_eval_case_with_all_fields(self):
+        """Test EvalCase with all fields."""
+        tc = EvalCase(
+            id="full_1",
+            query="What is Y?",
+            expected_answer="Y is...",
+            expected_sources=["source1", "source2"],
+            category="science",
+            difficulty="hard",
+            metadata={"key": "value"},
+        )
+
+        assert tc.expected_sources == ["source1", "source2"]
+        assert tc.metadata == {"key": "value"}

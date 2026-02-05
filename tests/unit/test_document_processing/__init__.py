@@ -1,1 +1,1 @@
-"""Unit tests for document processing."""
+"""Tests for document processing module."""
