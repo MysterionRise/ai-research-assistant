@@ -152,9 +152,7 @@ class TestPubMedConnectorSearch:
             connector = PubMedConnector()
 
             # Make _search_pmids raise a general exception
-            connector._search_pmids = AsyncMock(
-                side_effect=Exception("Network error")
-            )
+            connector._search_pmids = AsyncMock(side_effect=Exception("Network error"))
 
             # The retry decorator will exhaust retries and raise RetryError
             with pytest.raises(tenacity.RetryError):

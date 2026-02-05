@@ -135,5 +135,3 @@ class TestChunkResponse:
         assert response.id == "chunk-123"
         assert response.chunk_index == 0
         assert response.section == "Introduction"
-
-

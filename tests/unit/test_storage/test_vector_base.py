@@ -269,9 +269,7 @@ class TestMockVectorStore:
 
         async def delete_by_document(self, document_id: str) -> int:
             to_delete = [
-                cid
-                for cid, data in self.vectors.items()
-                if data["document_id"] == document_id
+                cid for cid, data in self.vectors.items() if data["document_id"] == document_id
             ]
             for cid in to_delete:
                 del self.vectors[cid]
@@ -283,9 +281,7 @@ class TestMockVectorStore:
         return self.MockVectorStore()
 
     @pytest.mark.asyncio
-    async def test_insert_and_search(
-        self, store: "TestMockVectorStore.MockVectorStore"
-    ) -> None:
+    async def test_insert_and_search(self, store: "TestMockVectorStore.MockVectorStore") -> None:
         """Test inserting and searching vectors."""
         embedding = [0.1, 0.2, 0.3]
         await store.insert(
@@ -302,9 +298,7 @@ class TestMockVectorStore:
         assert results[0].content == "Test content"
 
     @pytest.mark.asyncio
-    async def test_delete_chunk(
-        self, store: "TestMockVectorStore.MockVectorStore"
-    ) -> None:
+    async def test_delete_chunk(self, store: "TestMockVectorStore.MockVectorStore") -> None:
         """Test deleting a chunk."""
         await store.insert(
             chunk_id="c1",
@@ -318,9 +312,7 @@ class TestMockVectorStore:
         assert "c1" not in store.vectors
 
     @pytest.mark.asyncio
-    async def test_delete_by_document(
-        self, store: "TestMockVectorStore.MockVectorStore"
-    ) -> None:
+    async def test_delete_by_document(self, store: "TestMockVectorStore.MockVectorStore") -> None:
         """Test deleting all chunks for a document."""
         await store.insert("c1", "d1", "Content 1", [0.1])
         await store.insert("c2", "d1", "Content 2", [0.2])
@@ -334,9 +326,7 @@ class TestMockVectorStore:
         assert "c3" in store.vectors
 
     @pytest.mark.asyncio
-    async def test_search_with_top_k(
-        self, store: "TestMockVectorStore.MockVectorStore"
-    ) -> None:
+    async def test_search_with_top_k(self, store: "TestMockVectorStore.MockVectorStore") -> None:
         """Test search respects top_k limit."""
         for i in range(10):
             await store.insert(f"c{i}", f"d{i}", f"Content {i}", [float(i)])

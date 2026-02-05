@@ -1,7 +1,6 @@
 """Unit tests for database models."""
 
 
-
 class TestDocumentStatus:
     """Tests for DocumentStatus enum."""
 

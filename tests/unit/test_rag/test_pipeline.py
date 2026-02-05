@@ -198,9 +198,7 @@ class TestRAGPipelineQuery:
             tokens_used: int = 10
             metadata: dict = field(default_factory=dict)
 
-        mock_pipeline.synthesizer.synthesize = AsyncMock(
-            return_value=MockSynthesisResult()
-        )
+        mock_pipeline.synthesizer.synthesize = AsyncMock(return_value=MockSynthesisResult())
 
         await mock_pipeline.query("Test query", filters={"year": 2024})
 
@@ -223,9 +221,7 @@ class TestRAGPipelineQuery:
             tokens_used: int = 10
             metadata: dict = field(default_factory=dict)
 
-        mock_pipeline.synthesizer.synthesize = AsyncMock(
-            return_value=MockSynthesisResult()
-        )
+        mock_pipeline.synthesizer.synthesize = AsyncMock(return_value=MockSynthesisResult())
 
         result = await mock_pipeline.query("Unknown topic?")
 
@@ -248,9 +244,7 @@ class TestRAGPipelineQuery:
             tokens_used: int = 50
             metadata: dict = field(default_factory=dict)
 
-        mock_pipeline.synthesizer.synthesize = AsyncMock(
-            return_value=MockSynthesisResult()
-        )
+        mock_pipeline.synthesizer.synthesize = AsyncMock(return_value=MockSynthesisResult())
 
         result = await mock_pipeline.query("Test?")
 
@@ -259,15 +253,9 @@ class TestRAGPipelineQuery:
         assert result.latency_ms >= 0
 
     @pytest.mark.asyncio
-    async def test_query_metadata_includes_stats(
-        self, mock_pipeline: RAGPipeline
-    ) -> None:
+    async def test_query_metadata_includes_stats(self, mock_pipeline: RAGPipeline) -> None:
         """Test that query metadata includes statistics."""
-        retrieved = [
-            RetrievalResult(
-                chunk_id="c1", document_id="d1", content="Content", score=0.9
-            )
-        ]
+        retrieved = [RetrievalResult(chunk_id="c1", document_id="d1", content="Content", score=0.9)]
         reranked = [retrieved[0]]
 
         mock_pipeline.retriever.retrieve = AsyncMock(return_value=retrieved)
@@ -281,9 +269,7 @@ class TestRAGPipelineQuery:
             tokens_used: int = 100
             metadata: dict = field(default_factory=lambda: {"model": "claude-3"})
 
-        mock_pipeline.synthesizer.synthesize = AsyncMock(
-            return_value=MockSynthesisResult()
-        )
+        mock_pipeline.synthesizer.synthesize = AsyncMock(return_value=MockSynthesisResult())
 
         result = await mock_pipeline.query("Test?")
 

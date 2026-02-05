@@ -75,9 +75,7 @@ class TestDependencyFunctions:
         with (
             patch("aria.api.dependencies.LiteratureQAChain") as mock_chain,
             patch("aria.api.dependencies.get_rag_pipeline") as mock_get_pipeline,
-            patch(
-                "aria.api.dependencies.get_literature_aggregator"
-            ) as mock_get_aggregator,
+            patch("aria.api.dependencies.get_literature_aggregator") as mock_get_aggregator,
         ):
             mock_chain.return_value = MagicMock()
             mock_get_pipeline.return_value = MagicMock()

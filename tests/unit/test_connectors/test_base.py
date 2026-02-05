@@ -184,9 +184,7 @@ class TestMockConnector:
         ) -> list[LiteratureResult]:
             # Simple mock: return papers that have query in title
             results = [
-                paper
-                for paper in self._papers.values()
-                if query.lower() in paper.title.lower()
+                paper for paper in self._papers.values() if query.lower() in paper.title.lower()
             ]
             return results[:limit]
 
@@ -246,9 +244,7 @@ class TestMockConnector:
         self, connector: "TestMockConnector.MockConnector"
     ) -> None:
         """Test that search returns empty list for no matches."""
-        connector.add_paper(
-            LiteratureResult(id="1", title="Biology Paper", source="mock_source")
-        )
+        connector.add_paper(LiteratureResult(id="1", title="Biology Paper", source="mock_source"))
 
         results = await connector.search("Quantum Physics")
 
@@ -281,8 +277,6 @@ class TestMockConnector:
         result = await connector.get_by_id("unknown-id")
         assert result is None
 
-    def test_source_name_property(
-        self, connector: "TestMockConnector.MockConnector"
-    ) -> None:
+    def test_source_name_property(self, connector: "TestMockConnector.MockConnector") -> None:
         """Test that source_name property works correctly."""
         assert connector.source_name == "mock_source"

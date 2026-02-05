@@ -202,5 +202,3 @@ class TestChatResponse:
         )
         assert len(response.citations) == 1
         assert response.metadata["tokens_used"] == 150
-
-

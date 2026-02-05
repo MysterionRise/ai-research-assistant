@@ -183,9 +183,7 @@ class TestLLMClientComplete:
         assert call_kwargs["stop_sequences"] == ["END"]
 
     @pytest.mark.asyncio
-    async def test_complete_empty_response_raises_error(
-        self, mock_client: LLMClient
-    ) -> None:
+    async def test_complete_empty_response_raises_error(self, mock_client: LLMClient) -> None:
         """Test that empty response raises LLMResponseError."""
         mock_response = MagicMock()
         mock_response.content = []  # Empty content
@@ -196,13 +194,9 @@ class TestLLMClientComplete:
             await mock_client.complete("Hello")
 
     @pytest.mark.asyncio
-    async def test_complete_api_error_raises_connection_error(
-        self, mock_client: LLMClient
-    ) -> None:
+    async def test_complete_api_error_raises_connection_error(self, mock_client: LLMClient) -> None:
         """Test that API errors are wrapped in LLMConnectionError."""
-        mock_client.client.messages.create = AsyncMock(
-            side_effect=Exception("API Error")
-        )
+        mock_client.client.messages.create = AsyncMock(side_effect=Exception("API Error"))
 
         with pytest.raises(LLMConnectionError) as exc_info:
             await mock_client.complete("Hello")
@@ -263,9 +257,7 @@ class TestLLMClientStream:
         assert call_kwargs["system"] == "Be helpful"
 
     @pytest.mark.asyncio
-    async def test_stream_api_error_raises_connection_error(
-        self, mock_client: LLMClient
-    ) -> None:
+    async def test_stream_api_error_raises_connection_error(self, mock_client: LLMClient) -> None:
         """Test that stream API errors are wrapped."""
         mock_stream = MagicMock()
         mock_stream.__aenter__ = AsyncMock(side_effect=Exception("Stream Error"))
@@ -352,13 +344,9 @@ class TestLLMClientChat:
         assert call_kwargs["system"] == "You are a helpful assistant"
 
     @pytest.mark.asyncio
-    async def test_chat_api_error_raises_connection_error(
-        self, mock_client: LLMClient
-    ) -> None:
+    async def test_chat_api_error_raises_connection_error(self, mock_client: LLMClient) -> None:
         """Test that chat API errors are wrapped."""
-        mock_client.client.messages.create = AsyncMock(
-            side_effect=Exception("Chat Error")
-        )
+        mock_client.client.messages.create = AsyncMock(side_effect=Exception("Chat Error"))
 
         with pytest.raises(LLMConnectionError) as exc_info:
             await mock_client.chat([{"role": "user", "content": "Hello"}])

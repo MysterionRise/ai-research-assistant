@@ -136,9 +136,7 @@ class TestListProtocolsEndpoint:
                 transport=ASGITransport(app=app),
                 base_url="http://test",
             ) as client:
-                response = await client.get(
-                    "/api/v1/protocols?page=2&page_size=10"
-                )
+                response = await client.get("/api/v1/protocols?page=2&page_size=10")
 
             assert response.status_code == 200
             data = response.json()
@@ -298,9 +296,7 @@ class TestApproveProtocolEndpoint:
                 transport=ASGITransport(app=app),
                 base_url="http://test",
             ) as client:
-                response = await client.post(
-                    f"/api/v1/protocols/{protocol_id}/approve"
-                )
+                response = await client.post(f"/api/v1/protocols/{protocol_id}/approve")
 
             assert response.status_code == 404
 
@@ -324,8 +320,6 @@ class TestArchiveProtocolEndpoint:
                 transport=ASGITransport(app=app),
                 base_url="http://test",
             ) as client:
-                response = await client.delete(
-                    f"/api/v1/protocols/{protocol_id}"
-                )
+                response = await client.delete(f"/api/v1/protocols/{protocol_id}")
 
             assert response.status_code == 404

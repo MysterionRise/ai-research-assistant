@@ -271,5 +271,3 @@ class TestMolecularSearchResponse:
         )
         assert response.query_smiles == "CCO"
         assert len(response.results) == 1
-
-

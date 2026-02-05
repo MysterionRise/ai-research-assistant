@@ -1,6 +1,5 @@
 """Unit tests for document parsers."""
 
-
 import pytest
 
 from aria.document_processing.parsers.base import BaseParser, ParsedDocument, ParsedPage

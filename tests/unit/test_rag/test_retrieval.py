@@ -346,6 +346,7 @@ class TestSemanticRetriever:
     @pytest.mark.asyncio
     async def test_retrieve_with_mocked_dependencies(self) -> None:
         """Test semantic retrieval with mocked embedder and vector store."""
+
         # Create mock results
         @dataclass
         class MockVectorResult:
