@@ -76,7 +76,8 @@ COPY --from=builder /opt/venv /opt/venv
 # Set working directory
 WORKDIR ${APP_HOME}
 
-# Copy application code
+# Copy application code and build files
+COPY --chown=${APP_USER}:${APP_GROUP} pyproject.toml README.md ./
 COPY --chown=${APP_USER}:${APP_GROUP} src/ ./src/
 COPY --chown=${APP_USER}:${APP_GROUP} alembic/ ./alembic/
 COPY --chown=${APP_USER}:${APP_GROUP} alembic.ini ./
