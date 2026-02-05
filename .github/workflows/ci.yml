@@ -249,6 +249,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./infrastructure/docker/Dockerfile
           push: false
           tags: aria:ci-${{ github.sha }}
           cache-from: type=gha
