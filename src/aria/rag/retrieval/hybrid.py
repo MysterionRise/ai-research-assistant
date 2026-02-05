@@ -72,6 +72,7 @@ class HybridRetriever(BaseRetriever):
 
         # Run both retrievers
         import asyncio
+
         semantic_task = self.semantic_retriever.retrieve(query, candidate_k, filters)
         keyword_task = self.keyword_retriever.retrieve(query, candidate_k, filters)
 

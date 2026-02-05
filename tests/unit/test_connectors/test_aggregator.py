@@ -1,6 +1,5 @@
 """Tests for literature aggregator."""
 
-
 from aria.connectors.aggregator import LiteratureAggregator
 from aria.connectors.base import LiteratureResult
 

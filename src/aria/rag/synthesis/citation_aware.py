@@ -48,6 +48,7 @@ class CitationAwareSynthesizer:
         """Lazy load Anthropic client."""
         if self._client is None:
             from anthropic import AsyncAnthropic
+
             api_key = settings.anthropic_api_key
             if api_key:
                 self._client = AsyncAnthropic(api_key=api_key.get_secret_value())
@@ -153,9 +154,7 @@ class CitationAwareSynthesizer:
             section = f" - {chunk.section}" if chunk.section else ""
             page = f" (p. {chunk.page_number})" if chunk.page_number else ""
 
-            formatted_parts.append(
-                f"[{i}] {title}{section}{page}:\n{chunk.content}\n"
-            )
+            formatted_parts.append(f"[{i}] {title}{section}{page}:\n{chunk.content}\n")
 
         return "\n".join(formatted_parts), citation_map
 

@@ -47,8 +47,14 @@ class MetadataExtractor:
 
     # Abstract pattern
     ABSTRACT_PATTERNS = [
-        re.compile(r"abstract[:\s]*(.{100,2000}?)(?=\n\n|\bintroduction\b|\b1\.\s)", re.IGNORECASE | re.DOTALL),
-        re.compile(r"summary[:\s]*(.{100,2000}?)(?=\n\n|\bintroduction\b|\b1\.\s)", re.IGNORECASE | re.DOTALL),
+        re.compile(
+            r"abstract[:\s]*(.{100,2000}?)(?=\n\n|\bintroduction\b|\b1\.\s)",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        re.compile(
+            r"summary[:\s]*(.{100,2000}?)(?=\n\n|\bintroduction\b|\b1\.\s)",
+            re.IGNORECASE | re.DOTALL,
+        ),
     ]
 
     # Keywords pattern
@@ -158,21 +164,16 @@ class MetadataExtractor:
             if (
                 ("," in line or " and " in line.lower())
                 and len(line) < 500
-                and not any(word in line.lower() for word in ["abstract", "introduction", "keywords"])
+                and not any(
+                    word in line.lower() for word in ["abstract", "introduction", "keywords"]
+                )
             ):
                 # Try to split by common separators
                 authors = re.split(r",\s*(?:and\s*)?|\s+and\s+", line)
                 # Clean up author names
-                authors = [
-                    re.sub(r"\d+|\*|†|‡|§", "", a).strip()
-                    for a in authors
-                    if a.strip()
-                ]
+                authors = [re.sub(r"\d+|\*|†|‡|§", "", a).strip() for a in authors if a.strip()]
                 # Filter out unlikely author names
-                authors = [
-                    a for a in authors
-                    if len(a) > 2 and len(a) < 100 and not a.isupper()
-                ]
+                authors = [a for a in authors if len(a) > 2 and len(a) < 100 and not a.isupper()]
                 if authors and len(authors) <= 20:
                     return authors
 

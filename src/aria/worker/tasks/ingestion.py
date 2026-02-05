@@ -31,9 +31,7 @@ def ingest_document(self, document_id: str) -> dict:  # type: ignore[no-untyped-
 
     try:
         # Run async processing
-        result = asyncio.get_event_loop().run_until_complete(
-            _process_document_async(document_id)
-        )
+        result = asyncio.get_event_loop().run_until_complete(_process_document_async(document_id))
         return result
     except Exception as e:
         logger.error(
@@ -42,9 +40,7 @@ def ingest_document(self, document_id: str) -> dict:  # type: ignore[no-untyped-
             error=str(e),
         )
         # Mark document as failed
-        asyncio.get_event_loop().run_until_complete(
-            _mark_document_failed(document_id, str(e))
-        )
+        asyncio.get_event_loop().run_until_complete(_mark_document_failed(document_id, str(e)))
         raise self.retry(exc=e) from e
 
 
@@ -59,9 +55,7 @@ async def _process_document_async(document_id: str) -> dict:
     """
     async with async_session_maker() as session:
         # Get document
-        result = await session.execute(
-            select(Document).where(Document.id == document_id)
-        )
+        result = await session.execute(select(Document).where(Document.id == document_id))
         document = result.scalar_one_or_none()
 
         if not document:
@@ -169,9 +163,7 @@ async def _mark_document_failed(document_id: str, error: str) -> None:
         error: Error message.
     """
     async with async_session_maker() as session:
-        result = await session.execute(
-            select(Document).where(Document.id == document_id)
-        )
+        result = await session.execute(select(Document).where(Document.id == document_id))
         document = result.scalar_one_or_none()
         if document:
             document.mark_failed(error)

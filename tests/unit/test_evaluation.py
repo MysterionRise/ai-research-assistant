@@ -1,6 +1,5 @@
 """Tests for evaluation framework."""
 
-
 from aria.evaluation.golden_set import EvalCase, create_sample_golden_set
 from aria.evaluation.metrics import RAGMetrics
 

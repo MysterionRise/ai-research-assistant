@@ -173,9 +173,7 @@ class TestDocumentEndpoints:
         async_client: AsyncClient,
     ) -> None:
         """Test getting nonexistent document returns 404."""
-        response = await async_client.get(
-            "/api/v1/documents/00000000-0000-0000-0000-000000000000"
-        )
+        response = await async_client.get("/api/v1/documents/00000000-0000-0000-0000-000000000000")
 
         assert response.status_code == 404
 

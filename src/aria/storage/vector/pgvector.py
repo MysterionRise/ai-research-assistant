@@ -63,22 +63,20 @@ class PgVectorStore(BaseVectorStore):
             # Build base query with cosine similarity
             # pgvector uses <=> for cosine distance (1 - similarity)
             # We compute 1 - distance to get similarity
-            query = (
-                select(
-                    Chunk.id,
-                    Chunk.document_id,
-                    Chunk.content,
-                    Chunk.section,
-                    Chunk.page_number,
-                    Chunk.metadata_,
-                    (
-                        1 - func.cast(Chunk.embedding, text("vector")).op("<=>")(
-                            func.cast(embedding_str, text("vector"))
-                        )
-                    ).label("similarity"),
-                )
-                .where(Chunk.embedding.isnot(None))
-            )
+            query = select(
+                Chunk.id,
+                Chunk.document_id,
+                Chunk.content,
+                Chunk.section,
+                Chunk.page_number,
+                Chunk.metadata_,
+                (
+                    1
+                    - func.cast(Chunk.embedding, text("vector")).op("<=>")(
+                        func.cast(embedding_str, text("vector"))
+                    )
+                ).label("similarity"),
+            ).where(Chunk.embedding.isnot(None))
 
             # Apply filters
             if filters:
@@ -155,7 +153,8 @@ class PgVectorStore(BaseVectorStore):
                     Chunk.metadata_,
                     Document.title.label("document_title"),
                     (
-                        1 - func.cast(Chunk.embedding, text("vector")).op("<=>")(
+                        1
+                        - func.cast(Chunk.embedding, text("vector")).op("<=>")(
                             func.cast(embedding_str, text("vector"))
                         )
                     ).label("similarity"),
@@ -213,9 +212,7 @@ class PgVectorStore(BaseVectorStore):
 
         try:
             # Check if chunk exists
-            result = await session.execute(
-                select(Chunk).where(Chunk.id == chunk_id)
-            )
+            result = await session.execute(select(Chunk).where(Chunk.id == chunk_id))
             chunk = result.scalar_one_or_none()
 
             if chunk:
@@ -253,9 +250,7 @@ class PgVectorStore(BaseVectorStore):
         session = await self._get_session()
 
         try:
-            await session.execute(
-                delete(Chunk).where(Chunk.id == chunk_id)
-            )
+            await session.execute(delete(Chunk).where(Chunk.id == chunk_id))
             await session.commit()
 
             logger.debug("vector_deleted", chunk_id=chunk_id)
@@ -276,9 +271,7 @@ class PgVectorStore(BaseVectorStore):
         session = await self._get_session()
 
         try:
-            result = await session.execute(
-                delete(Chunk).where(Chunk.document_id == document_id)
-            )
+            result = await session.execute(delete(Chunk).where(Chunk.document_id == document_id))
             await session.commit()
 
             count = result.rowcount

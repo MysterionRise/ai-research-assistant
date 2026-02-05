@@ -183,9 +183,7 @@ async def get_document(
     Raises:
         HTTPException: If document not found.
     """
-    result = await session.execute(
-        select(Document).where(Document.id == str(document_id))
-    )
+    result = await session.execute(select(Document).where(Document.id == str(document_id)))
     document = result.scalar_one_or_none()
 
     if not document:
@@ -236,8 +234,7 @@ async def ingest_document_endpoint(
     if content_type not in allowed_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File type {content_type} not supported. "
-            f"Allowed: {', '.join(allowed_types)}",
+            detail=f"File type {content_type} not supported. Allowed: {', '.join(allowed_types)}",
         )
 
     # Generate document ID and file path
@@ -312,9 +309,7 @@ async def update_document(
     Raises:
         HTTPException: If document not found.
     """
-    result = await session.execute(
-        select(Document).where(Document.id == str(document_id))
-    )
+    result = await session.execute(select(Document).where(Document.id == str(document_id)))
     document = result.scalar_one_or_none()
 
     if not document:
@@ -359,9 +354,7 @@ async def delete_document(
     Raises:
         HTTPException: If document not found.
     """
-    result = await session.execute(
-        select(Document).where(Document.id == str(document_id))
-    )
+    result = await session.execute(select(Document).where(Document.id == str(document_id)))
     document = result.scalar_one_or_none()
 
     if not document:
@@ -409,9 +402,7 @@ async def get_document_chunks(
         HTTPException: If document not found.
     """
     # Verify document exists
-    doc_result = await session.execute(
-        select(Document).where(Document.id == str(document_id))
-    )
+    doc_result = await session.execute(select(Document).where(Document.id == str(document_id)))
     document = doc_result.scalar_one_or_none()
 
     if not document:
@@ -422,9 +413,7 @@ async def get_document_chunks(
 
     # Get chunks
     result = await session.execute(
-        select(Chunk)
-        .where(Chunk.document_id == str(document_id))
-        .order_by(Chunk.chunk_index)
+        select(Chunk).where(Chunk.document_id == str(document_id)).order_by(Chunk.chunk_index)
     )
     chunks = result.scalars().all()
 

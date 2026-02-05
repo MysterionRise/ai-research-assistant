@@ -225,9 +225,7 @@ async def generate_protocol(request: ProtocolGenerateRequest) -> Protocol:
             ProtocolStep(
                 step_number=1,
                 title="Placeholder Step",
-                description=(
-                    "This is a placeholder. AI generation not yet implemented."
-                ),
+                description=("This is a placeholder. AI generation not yet implemented."),
             ),
         ],
         tags=["ai-generated"],

@@ -39,9 +39,7 @@ def build_rag_prompt(
         section = f" - {chunk.section}" if chunk.section else ""
         page = f" (p. {chunk.page_number})" if chunk.page_number else ""
 
-        context_parts.append(
-            f"[{i}] {title}{section}{page}:\n{chunk.content}\n"
-        )
+        context_parts.append(f"[{i}] {title}{section}{page}:\n{chunk.content}\n")
 
     formatted_context = "\n".join(context_parts)
 

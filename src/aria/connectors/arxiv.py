@@ -145,9 +145,7 @@ class ArxivConnector(BaseConnector):
                         pass
 
                 # Category
-                category_elem = entry.find(
-                    "{http://arxiv.org/schemas/atom}primary_category"
-                )
+                category_elem = entry.find("{http://arxiv.org/schemas/atom}primary_category")
                 category = None
                 if category_elem is not None:
                     category = category_elem.get("term")

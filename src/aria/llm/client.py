@@ -45,9 +45,7 @@ class LLMClient:
         self.model = model or settings.anthropic_model
 
         api_key = api_key or (
-            settings.anthropic_api_key.get_secret_value()
-            if settings.anthropic_api_key
-            else None
+            settings.anthropic_api_key.get_secret_value() if settings.anthropic_api_key else None
         )
 
         if not api_key:

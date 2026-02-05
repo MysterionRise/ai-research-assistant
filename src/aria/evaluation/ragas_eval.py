@@ -44,6 +44,7 @@ class RAGASEvaluator:
         """Check if Ragas is available."""
         try:
             import ragas  # noqa: F401
+
             return True
         except ImportError:
             logger.warning(
@@ -155,8 +156,16 @@ class RAGASEvaluator:
             context_precision=statistics.mean(precision_scores) if precision_scores else 0,
             context_recall=statistics.mean(recall_scores) if recall_scores else 0,
             latency_p50_ms=int(statistics.median(latencies)) if latencies else 0,
-            latency_p95_ms=int(statistics.quantiles(latencies, n=20)[18]) if len(latencies) >= 20 else max(latencies) if latencies else 0,
-            latency_p99_ms=int(statistics.quantiles(latencies, n=100)[98]) if len(latencies) >= 100 else max(latencies) if latencies else 0,
+            latency_p95_ms=int(statistics.quantiles(latencies, n=20)[18])
+            if len(latencies) >= 20
+            else max(latencies)
+            if latencies
+            else 0,
+            latency_p99_ms=int(statistics.quantiles(latencies, n=100)[98])
+            if len(latencies) >= 100
+            else max(latencies)
+            if latencies
+            else 0,
             queries_evaluated=len(test_cases),
             successful_queries=successful,
             failed_queries=failed,
@@ -310,4 +319,5 @@ async def main() -> None:
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

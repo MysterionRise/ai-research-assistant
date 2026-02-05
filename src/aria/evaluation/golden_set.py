@@ -22,8 +22,6 @@ class EvalCase:
     metadata: dict = field(default_factory=dict)
 
 
-
-
 @dataclass
 class GoldenSet:
     """Collection of test cases for RAG evaluation."""

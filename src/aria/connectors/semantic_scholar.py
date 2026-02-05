@@ -143,6 +143,7 @@ class SemanticScholarConnector(BaseConnector):
                 influential_count = paper.get("influentialCitationCount", 0) or 0
                 # Simple scoring: log scale of citations
                 import math
+
                 score = min(1.0, math.log10(citation_count + 1) / 5) if citation_count > 0 else 0.5
                 if influential_count > 0:
                     score = min(1.0, score + 0.2)
@@ -238,9 +239,7 @@ class SemanticScholarConnector(BaseConnector):
 
             data = response.json()
             papers = [
-                ref.get("citedPaper", {})
-                for ref in data.get("data", [])
-                if ref.get("citedPaper")
+                ref.get("citedPaper", {}) for ref in data.get("data", []) if ref.get("citedPaper")
             ]
 
             return self._parse_results(papers)

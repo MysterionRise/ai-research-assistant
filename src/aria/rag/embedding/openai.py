@@ -45,9 +45,7 @@ class OpenAIEmbedder(BaseEmbedder):
         """
         self._model = model or settings.openai_embedding_model
         api_key = api_key or (
-            settings.openai_api_key.get_secret_value()
-            if settings.openai_api_key
-            else None
+            settings.openai_api_key.get_secret_value() if settings.openai_api_key else None
         )
 
         if not api_key:

@@ -72,4 +72,5 @@ class TestSettingsSmoke:
     def test_settings_can_be_imported(self) -> None:
         """Test settings module import."""
         from aria.config import settings
+
         assert settings is not None

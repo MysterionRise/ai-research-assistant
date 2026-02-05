@@ -67,8 +67,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="ARIA - AI Research Intelligence Assistant",
         description=(
-            "Enterprise-grade AI Research Assistant for Life Sciences "
-            "and Materials Science R&D"
+            "Enterprise-grade AI Research Assistant for Life Sciences and Materials Science R&D"
         ),
         version="0.1.0",
         docs_url="/docs" if settings.debug else None,

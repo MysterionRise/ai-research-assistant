@@ -108,9 +108,7 @@ class PDFParser(BaseParser):
                         for table in page_tables:
                             # Convert None values to empty strings
                             cleaned_table = [
-                                [str(cell) if cell else "" for cell in row]
-                                for row in table
-                                if row
+                                [str(cell) if cell else "" for cell in row] for row in table if row
                             ]
                             if cleaned_table:
                                 tables.append(cleaned_table)

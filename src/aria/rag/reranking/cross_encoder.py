@@ -41,6 +41,7 @@ class CrossEncoderReranker:
         if self._model is None:
             try:
                 from sentence_transformers import CrossEncoder
+
                 self._model = CrossEncoder(self.model_name)
                 logger.info("cross_encoder_model_loaded", model=self.model_name)
             except ImportError:
