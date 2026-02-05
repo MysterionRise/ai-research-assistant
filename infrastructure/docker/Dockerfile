@@ -28,7 +28,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Install Python dependencies
 WORKDIR /build
-COPY pyproject.toml ./
+COPY pyproject.toml README.md ./
 COPY src/ ./src/
 RUN pip install --upgrade pip && \
     pip install build && \
