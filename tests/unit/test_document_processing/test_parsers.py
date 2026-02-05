@@ -1,6 +1,5 @@
 """Unit tests for document parsers."""
 
-from typing import Any
 
 import pytest
 

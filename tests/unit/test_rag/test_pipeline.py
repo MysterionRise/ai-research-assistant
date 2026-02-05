@@ -72,7 +72,7 @@ class TestRAGPipelineInitialization:
             patch("aria.rag.pipeline.CrossEncoderReranker") as mock_reranker,
             patch("aria.rag.pipeline.CitationAwareSynthesizer") as mock_synthesizer,
         ):
-            pipeline = RAGPipeline()
+            RAGPipeline()
 
             mock_retriever.assert_called_once()
             mock_reranker.assert_called_once()

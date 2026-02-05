@@ -1,7 +1,6 @@
 """Unit tests for LLM chains."""
 
-from dataclasses import field
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -87,17 +86,19 @@ class TestLiteratureQAChainInit:
 
     def test_chain_init_defaults(self) -> None:
         """Test chain initialization with defaults."""
-        with patch("aria.llm.chains.literature_qa.RAGPipeline") as mock_rag:
-            with patch("aria.llm.chains.literature_qa.LiteratureAggregator") as mock_agg:
-                mock_rag.return_value = MagicMock()
-                mock_agg.return_value = MagicMock()
+        with (
+            patch("aria.llm.chains.literature_qa.RAGPipeline") as mock_rag,
+            patch("aria.llm.chains.literature_qa.LiteratureAggregator") as mock_agg,
+        ):
+            mock_rag.return_value = MagicMock()
+            mock_agg.return_value = MagicMock()
 
-                chain = LiteratureQAChain()
+            chain = LiteratureQAChain()
 
-                assert chain.include_external is True
-                assert chain.rag_pipeline is not None
-                assert chain.literature_aggregator is not None
-                assert chain.graph is not None
+            assert chain.include_external is True
+            assert chain.rag_pipeline is not None
+            assert chain.literature_aggregator is not None
+            assert chain.graph is not None
 
     def test_chain_init_with_external_disabled(self) -> None:
         """Test chain initialization with external search disabled."""

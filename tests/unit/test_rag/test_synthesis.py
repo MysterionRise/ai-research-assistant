@@ -1,9 +1,6 @@
 """Unit tests for RAG synthesis module."""
 
-from dataclasses import field
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 
 class TestSynthesisResult:

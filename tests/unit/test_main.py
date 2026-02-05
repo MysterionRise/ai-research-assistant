@@ -24,7 +24,7 @@ class TestMainModule:
             patch("aria.main.uvicorn") as mock_uvicorn,
             patch("aria.main.settings") as mock_settings,
         ):
-            mock_settings.api_host = "0.0.0.0"
+            mock_settings.api_host = "0.0.0.0"  # noqa: S104
             mock_settings.api_port = 8000
             mock_settings.debug = False
             mock_settings.api_workers = 4
@@ -36,7 +36,7 @@ class TestMainModule:
 
             mock_uvicorn.run.assert_called_once()
             call_kwargs = mock_uvicorn.run.call_args[1]
-            assert call_kwargs["host"] == "0.0.0.0"
+            assert call_kwargs["host"] == "0.0.0.0"  # noqa: S104
             assert call_kwargs["port"] == 8000
             assert call_kwargs["workers"] == 4
             assert call_kwargs["log_level"] == "info"

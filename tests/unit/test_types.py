@@ -4,10 +4,10 @@ import pytest
 from pydantic import ValidationError
 
 from aria.types import (
+    ChatContext,
     ChunkMetadata,
     ChunkType,
     Citation,
-    ChatContext,
     DocumentMetadata,
     DocumentSource,
     EvaluationResult,

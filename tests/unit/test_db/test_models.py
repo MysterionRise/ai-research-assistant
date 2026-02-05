@@ -1,6 +1,5 @@
 """Unit tests for database models."""
 
-from unittest.mock import MagicMock
 
 
 class TestDocumentStatus:

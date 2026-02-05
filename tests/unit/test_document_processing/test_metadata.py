@@ -125,9 +125,8 @@ Drug discovery is a complex process..."""
 
     def test_extract_authors(self, extractor, sample_document) -> None:
         """Test extracting author names."""
-        result = extractor.extract(sample_document)
-        # Authors extraction uses heuristics that may not always work
         # Just verify the method runs without error
+        extractor.extract(sample_document)
 
 
 class TestDoiPattern:

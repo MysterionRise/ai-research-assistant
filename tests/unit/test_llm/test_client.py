@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from aria.exceptions import LLMConnectionError, LLMResponseError
+from aria.exceptions import LLMConnectionError
 from aria.llm.client import LLMClient, LLMResponse
 
 
