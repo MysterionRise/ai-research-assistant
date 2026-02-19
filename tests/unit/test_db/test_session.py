@@ -115,7 +115,7 @@ class TestInitDb:
             # Should have executed the CREATE EXTENSION command
             mock_conn.execute.assert_called_once()
             call_args = mock_conn.execute.call_args[0][0]
-            assert "vector" in call_args
+            assert "vector" in str(call_args)
 
             # Should have run sync to create tables
             mock_conn.run_sync.assert_called_once()

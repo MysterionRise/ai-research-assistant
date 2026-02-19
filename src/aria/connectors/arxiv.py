@@ -1,9 +1,9 @@
 """arXiv connector using the arXiv API."""
 
 import re
-import xml.etree.ElementTree as ET
 from typing import Any, ClassVar
 
+import defusedxml.ElementTree as DefusedET
 import httpx
 import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -104,8 +104,8 @@ class ArxivConnector(BaseConnector):
         # Handle namespace
         # arXiv returns Atom feed format
         try:
-            root = ET.fromstring(xml_text)
-        except ET.ParseError as e:
+            root = DefusedET.fromstring(xml_text)
+        except DefusedET.ParseError as e:
             logger.error("arxiv_xml_parse_error", error=str(e))
             return []
 

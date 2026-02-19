@@ -31,16 +31,19 @@ def ingest_document(self, document_id: str) -> dict:  # type: ignore[no-untyped-
 
     try:
         # Run async processing
-        result = asyncio.get_event_loop().run_until_complete(_process_document_async(document_id))
+        result = asyncio.run(_process_document_async(document_id))
         return result
+    except self.MaxRetriesExceededError:
+        # All retries exhausted — mark as permanently failed
+        asyncio.run(_mark_document_failed(document_id, "Max retries exceeded"))
+        raise
     except Exception as e:
         logger.error(
             "ingestion_failed",
             document_id=document_id,
             error=str(e),
         )
-        # Mark document as failed
-        asyncio.get_event_loop().run_until_complete(_mark_document_failed(document_id, str(e)))
+        # Retry without marking as failed — only mark failed after all retries
         raise self.retry(exc=e) from e
 
 

@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from aria.exceptions import LLMConnectionError
+from aria.exceptions import LLMConnectionError, LLMResponseError
 from aria.llm.client import LLMClient, LLMResponse
 
 
@@ -190,7 +190,7 @@ class TestLLMClientComplete:
 
         mock_client.client.messages.create = AsyncMock(return_value=mock_response)
 
-        with pytest.raises(LLMConnectionError):
+        with pytest.raises(LLMResponseError):
             await mock_client.complete("Hello")
 
     @pytest.mark.asyncio

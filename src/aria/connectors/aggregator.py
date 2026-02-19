@@ -86,16 +86,13 @@ class LiteratureAggregator:
                 connector = self.available_sources[source_name]
                 tasks.append(self._search_source(connector, query, limit, **kwargs))
 
-        # Gather results with error handling
-        source_results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Gather results (errors handled inside _search_source)
+        source_results = await asyncio.gather(*tasks)
 
         # Combine results
         all_results: list[LiteratureResult] = []
         for result in source_results:
-            if isinstance(result, list):
-                all_results.extend(result)
-            elif isinstance(result, Exception):
-                logger.warning("source_search_failed", error=str(result))
+            all_results.extend(result)
 
         # Deduplicate and merge
         deduplicated = self._deduplicate_results(all_results)

@@ -1,11 +1,11 @@
 """PubMed connector using E-utilities API."""
 
-import xml.etree.ElementTree as ET
 from typing import Any
 
+import defusedxml.ElementTree as DefusedET
 import httpx
 import structlog
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_not_exception_type, stop_after_attempt, wait_exponential
 
 from aria.config.settings import settings
 from aria.connectors.base import BaseConnector, LiteratureResult
@@ -50,6 +50,7 @@ class PubMedConnector(BaseConnector):
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=10),
+        retry=retry_if_not_exception_type(RateLimitError),
     )
     async def search(
         self,
@@ -175,7 +176,7 @@ class PubMedConnector(BaseConnector):
             List of LiteratureResult objects.
         """
         results = []
-        root = ET.fromstring(xml_text)
+        root = DefusedET.fromstring(xml_text)
 
         for article in root.findall(".//PubmedArticle"):
             try:

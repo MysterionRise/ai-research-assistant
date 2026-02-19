@@ -62,6 +62,7 @@ class CitationAwareSynthesizer:
         context: list[RetrievalResult],
         max_tokens: int = 2048,
         temperature: float = 0.3,
+        conversation_history: list[dict[str, str]] | None = None,
     ) -> SynthesisResult:
         """Synthesize an answer with citations.
 
@@ -92,7 +93,7 @@ class CitationAwareSynthesizer:
         formatted_context, citation_map = self._format_context(context)
 
         # Build prompt
-        prompt = self._build_prompt(query, formatted_context)
+        prompt = self._build_prompt(query, formatted_context, conversation_history)
 
         # Call LLM
         client = self._get_client()
@@ -102,6 +103,14 @@ class CitationAwareSynthesizer:
             temperature=temperature,
             messages=[{"role": "user", "content": prompt}],
         )
+
+        if not response.content or not hasattr(response.content[0], "text"):
+            return SynthesisResult(
+                answer="Failed to generate a response. Please try again.",
+                citations=[],
+                sources_used=0,
+                confidence=0.0,
+            )
 
         answer = response.content[0].text
 
@@ -158,16 +167,31 @@ class CitationAwareSynthesizer:
 
         return "\n".join(formatted_parts), citation_map
 
-    def _build_prompt(self, query: str, context: str) -> str:
+    def _build_prompt(
+        self,
+        query: str,
+        context: str,
+        conversation_history: list[dict[str, str]] | None = None,
+    ) -> str:
         """Build the synthesis prompt.
 
         Args:
             query: User's question.
             context: Formatted context with citations.
+            conversation_history: Optional prior conversation messages.
 
         Returns:
             Complete prompt for LLM.
         """
+        history_section = ""
+        if conversation_history:
+            history_lines = []
+            for msg in conversation_history[-10:]:  # Limit to last 10 messages
+                role = msg.get("role", "user").upper()
+                content = msg.get("content", "")
+                history_lines.append(f"{role}: {content}")
+            history_section = "CONVERSATION HISTORY:\n" + "\n".join(history_lines) + "\n\n"
+
         return f"""You are a scientific research assistant. Answer the user's question based ONLY on the provided context. Follow these rules:
 
 1. Use inline citations [1], [2], etc. to reference your sources
@@ -176,7 +200,7 @@ class CitationAwareSynthesizer:
 4. Synthesize information from multiple sources when relevant
 5. Use direct quotes sparingly, preferring paraphrased summaries
 
-CONTEXT:
+{history_section}CONTEXT:
 {context}
 
 QUESTION: {query}

@@ -66,32 +66,24 @@ class TestSemanticScholarConnectorSearch:
 
     @pytest.mark.asyncio
     async def test_search_rate_limit_error(self) -> None:
-        """Test search handling rate limit error (retries exhausted)."""
-        import httpx
-        import tenacity
+        """Test search handling rate limit error (not retried)."""
+        from aria.exceptions import RateLimitError
 
         with patch("aria.connectors.semantic_scholar.settings") as mock_settings:
             mock_settings.semantic_scholar_api_key = None
 
             connector = SemanticScholarConnector()
 
-            # Create a mock response for 429 status
+            # Return a response with 429 status (triggers RateLimitError)
             mock_response = MagicMock()
             mock_response.status_code = 429
 
-            # Make client.get raise HTTPStatusError
             mock_client = MagicMock()
-            mock_client.get = AsyncMock(
-                side_effect=httpx.HTTPStatusError(
-                    "Rate limited",
-                    request=MagicMock(),
-                    response=mock_response,
-                )
-            )
+            mock_client.get = AsyncMock(return_value=mock_response)
             connector.client = mock_client
 
-            # The retry decorator will exhaust retries and raise RetryError
-            with pytest.raises(tenacity.RetryError):
+            # RateLimitError should propagate immediately without retries
+            with pytest.raises(RateLimitError):
                 await connector.search("test query")
 
     @pytest.mark.asyncio

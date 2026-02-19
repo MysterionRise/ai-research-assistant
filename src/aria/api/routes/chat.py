@@ -143,12 +143,27 @@ async def send_message(
     )
     session.add(user_message)
 
+    # Load conversation history for multi-turn context
+    conversation_history: list[dict[str, str]] | None = None
+    if request.conversation_id:
+        history_result = await session.execute(
+            select(Message)
+            .where(Message.conversation_id == conversation.id)
+            .order_by(Message.created_at)
+        )
+        history_messages = history_result.scalars().all()
+        if history_messages:
+            conversation_history = [
+                {"role": msg.role, "content": msg.content} for msg in history_messages
+            ]
+
     # Run RAG pipeline
     logger.info("processing_chat_request", conversation_id=conversation.id)
 
     rag_result = await rag_pipeline.query(
         question=request.message,
         max_tokens=request.max_tokens,
+        conversation_history=conversation_history,
     )
 
     # Calculate latency

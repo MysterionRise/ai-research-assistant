@@ -23,8 +23,8 @@ from aria.worker.tasks.ingestion import ingest_document
 router = APIRouter(prefix="/documents")
 logger = structlog.get_logger(__name__)
 
-# Storage directory for uploaded files
-UPLOAD_DIR = Path("data/uploads")
+# Storage directory for uploaded files (resolve to absolute path for reliable deployment)
+UPLOAD_DIR = Path("data/uploads").resolve()
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -132,7 +132,9 @@ async def list_documents(
     query = select(Document)
 
     if search:
-        query = query.where(Document.title.ilike(f"%{search}%"))
+        # Escape LIKE wildcard characters to prevent wildcard injection
+        escaped_search = search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        query = query.where(Document.title.ilike(f"%{escaped_search}%"))
 
     if status_filter:
         query = query.where(Document.status == status_filter)
@@ -222,12 +224,9 @@ async def ingest_document_endpoint(
     Raises:
         HTTPException: If file type not supported.
     """
-    # Validate file type
+    # Validate file type (only types with implemented parsers)
     allowed_types = {
         "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "text/plain",
-        "text/markdown",
     }
 
     content_type = file.content_type or "application/octet-stream"
@@ -265,7 +264,13 @@ async def ingest_document_endpoint(
         status=DocumentStatus.PENDING.value,
     )
     session.add(document)
-    await session.commit()
+    try:
+        await session.commit()
+    except Exception:
+        # Clean up orphan file if DB commit fails
+        if file_path.exists():
+            file_path.unlink()
+        raise
 
     # Queue for processing
     ingest_document.delay(document_id)

@@ -60,10 +60,11 @@ class KeywordRetriever(BaseRetriever):
         if not query_terms:
             return []
 
-        session = self._session or async_session_maker()
+        # Cap chunks loaded into memory for BM25 computation
+        max_chunks = 10000
 
-        try:
-            # Build query
+        async def _run_bm25(session: AsyncSession) -> list[RetrievalResult]:
+            # Build query with bounded result set
             stmt = select(
                 Chunk.id,
                 Chunk.document_id,
@@ -81,6 +82,8 @@ class KeywordRetriever(BaseRetriever):
                 if filters.get("document_ids"):
                     stmt = stmt.where(Chunk.document_id.in_(filters["document_ids"]))
 
+            stmt = stmt.limit(max_chunks)
+
             result = await session.execute(stmt)
             rows = result.fetchall()
 
@@ -93,7 +96,7 @@ class KeywordRetriever(BaseRetriever):
 
             # Calculate IDF for each query term
             doc_count = len(rows)
-            term_doc_freq = Counter()
+            term_doc_freq: Counter = Counter()
             for row in rows:
                 content_terms = set(self._tokenize(row.content))
                 for term in query_terms:
@@ -155,9 +158,12 @@ class KeywordRetriever(BaseRetriever):
 
             return results
 
-        finally:
-            if not self._session:
-                await session.close()
+        if self._session:
+            return await _run_bm25(self._session)
+
+        # Use proper async context manager for session lifecycle
+        async with async_session_maker() as session:
+            return await _run_bm25(session)
 
     def _tokenize(self, text: str) -> list[str]:
         """Tokenize text into terms.

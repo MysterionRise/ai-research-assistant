@@ -53,6 +53,7 @@ dependencies = [
     "tiktoken>=0.5.2",
     "sentence-transformers>=2.2.2",
     "aiofiles>=23.2.1",
+    "defusedxml>=0.7.1",
 ]
 
 [project.optional-dependencies]

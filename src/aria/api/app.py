@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import structlog
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
@@ -51,6 +51,15 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     logger.info("shutting_down_application")
+
+    # Close HTTP clients in singletons
+    from aria.api.dependencies import get_literature_aggregator
+
+    try:
+        aggregator = get_literature_aggregator()
+        await aggregator.close()
+    except Exception:
+        logger.warning("failed_to_close_literature_aggregator")
 
     # Close database connections
     await close_db()
@@ -136,6 +145,10 @@ def _register_exception_handlers(app: FastAPI) -> None:
         Returns:
             JSONResponse: Error response.
         """
+        # Let FastAPI handle HTTPExceptions with their proper status codes
+        if isinstance(exc, HTTPException):
+            raise exc
+
         logger.exception(
             "unhandled_exception",
             path=request.url.path,

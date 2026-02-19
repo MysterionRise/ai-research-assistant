@@ -73,6 +73,7 @@ class RAGPipeline:
         question: str,
         filters: dict[str, Any] | None = None,
         max_tokens: int = 2048,
+        conversation_history: list[dict[str, str]] | None = None,
     ) -> RAGPipelineResult:
         """Execute the full RAG pipeline.
 
@@ -114,6 +115,7 @@ class RAGPipeline:
             query=question,
             context=reranked,
             max_tokens=max_tokens,
+            conversation_history=conversation_history,
         )
 
         # Calculate latency

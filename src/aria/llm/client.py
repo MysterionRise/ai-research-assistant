@@ -8,7 +8,7 @@ import structlog
 from anthropic import AsyncAnthropic
 
 from aria.config.settings import settings
-from aria.exceptions import LLMConnectionError, LLMResponseError
+from aria.exceptions import LLMConnectionError, LLMError, LLMResponseError
 
 logger = structlog.get_logger(__name__)
 
@@ -120,6 +120,8 @@ class LLMClient:
 
             return result
 
+        except LLMError:
+            raise
         except Exception as e:
             logger.error("llm_completion_failed", error=str(e))
             raise LLMConnectionError("anthropic", str(e)) from e

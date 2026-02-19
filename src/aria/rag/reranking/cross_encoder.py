@@ -98,8 +98,8 @@ class CrossEncoderReranker:
 
         # Update scores and return top_k
         reranked = []
-        max_score = max(scores) if scores.any() else 1.0  # type: ignore[union-attr]
-        min_score = min(scores) if scores.any() else 0.0  # type: ignore[union-attr]
+        max_score = float(scores.max()) if len(scores) > 0 else 1.0
+        min_score = float(scores.min()) if len(scores) > 0 else 0.0
         score_range = max_score - min_score if max_score != min_score else 1.0
 
         for score, result in scored_results[:top_k]:

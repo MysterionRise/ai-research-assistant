@@ -113,9 +113,10 @@ class TestPubMedConnectorSearch:
 
     @pytest.mark.asyncio
     async def test_search_rate_limit_error(self) -> None:
-        """Test search handling rate limit error (retries exhausted)."""
+        """Test search handling rate limit error (not retried)."""
         import httpx
-        import tenacity
+
+        from aria.exceptions import RateLimitError
 
         with patch("aria.connectors.pubmed.settings") as mock_settings:
             mock_settings.pubmed_email = "test@example.com"
@@ -136,8 +137,8 @@ class TestPubMedConnectorSearch:
                 )
             )
 
-            # The retry decorator will exhaust retries and raise RetryError
-            with pytest.raises(tenacity.RetryError):
+            # RateLimitError should propagate immediately without retries
+            with pytest.raises(RateLimitError):
                 await connector.search("test query")
 
     @pytest.mark.asyncio
